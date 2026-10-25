@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="title" content="HyperProve: Answer-Guided Hypergraph Expansion for Multi-Hop Question Answering">
+  <meta name="description" content="HyperProve carries each intermediate answer together with its supporting atomic-fact hyperedges as the retrieval state for the next hop, achieving the best accuracy, EM and F1 on MuSiQue, HotpotQA and 2WikiMultiHopQA. EMNLP 2026 Main Conference.">
+  <meta name="keywords" content="HyperProve, multi-hop question answering, retrieval-augmented generation, RAG, hypergraph, atomic facts, graph RAG, iterative retrieval, EMNLP 2026">
+  <meta name="author" content="An Nguyen Phu, Dung Nguyen Quang, Luu Hieu An, Linh Ngo Van, Trung Le, Thien Huu Nguyen">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="HyperProve">
+  <meta property="og:title" content="HyperProve: Answer-Guided Hypergraph Expansion for Multi-Hop Question Answering">
+  <meta property="og:description" content="Carry the answer and its supporting atomic facts as the structural frontier of the next hop. EMNLP 2026 Main Conference.">
+  <meta property="og:url" content="https://hyperprove.github.io/">
+  <meta property="og:image" content="https://hyperprove.github.io/static/images/pipeline.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HyperProve: Answer-Guided Hypergraph Expansion for Multi-Hop Question Answering">
+  <meta name="twitter:description" content="Carry the answer and its supporting atomic facts as the structural frontier of the next hop. EMNLP 2026 Main Conference.">
+  <meta name="twitter:image" content="https://hyperprove.github.io/static/images/pipeline.png">
+
+  <meta name="citation_title" content="HyperProve: Answer-Guided Hypergraph Expansion for Multi-Hop Question Answering">
+  <meta name="citation_author" content="Nguyen Phu, An">
+  <meta name="citation_author" content="Nguyen Quang, Dung">
+  <meta name="citation_author" content="Luu, Hieu An">
+  <meta name="citation_author" content="Ngo Van, Linh">
+  <meta name="citation_author" content="Le, Trung">
+  <meta name="citation_author" content="Nguyen, Thien Huu">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing">
+  <meta name="citation_firstpage" content="4867">
+  <meta name="citation_lastpage" content="4882">
+  <meta name="citation_pdf_url" content="https://aclanthology.org/2026.emnlp-main.212.pdf">
+
+  <meta name="theme-color" content="#1769aa">
+
+  <title>HyperProve: Answer-Guided Hypergraph Expansion for Multi-Hop Question Answering</title>
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M22 30 L50 18 L78 34 L64 74 L30 72 Z' fill='%23dbeafe' stroke='%231769aa' stroke-width='6' stroke-linejoin='round'/><circle cx='22' cy='30' r='10' fill='%231769aa'/><circle cx='78' cy='34' r='10' fill='%231769aa'/><circle cx='30' cy='72' r='10' fill='%231769aa'/><circle cx='64' cy='74' r='10' fill='%23d6232f'/><circle cx='50' cy='18' r='10' fill='%231769aa'/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+
+  <!-- Title -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title"><span class="brand">HyperProve</span>: Answer-Guided Hypergraph Expansion for Multi-Hop Question Answering</h1>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">An Nguyen Phu<sup>1,*</sup>,</span>
+              <span class="author-block">Dung Nguyen Quang<sup>1,*</sup>,</span>
+              <span class="author-block">Luu Hieu An<sup>1</sup>,</span>
+              <span class="author-block">Linh Ngo Van<sup>1,&dagger;</sup>,</span>
+              <span class="author-block">Trung Le<sup>2</sup>,</span>
+              <span class="author-block">Thien Huu Nguyen<sup>3</sup></span>
+            </div>
+
+            <div class="is-size-5 publication-authors affiliations">
+              <span class="author-block"><sup>1</sup>Hanoi University of Science and Technology</span>
+              <span class="author-block"><sup>2</sup>Monash University</span>
+              <span class="author-block"><sup>3</sup>University of Oregon</span>
+              <br>
+              <a href="https://aclanthology.org/2026.emnlp-main.212/" target="_blank" rel="noopener"><span class="venue-badge">EMNLP 2026 Main Conference</span></a>
+              <br>
+              <span class="eql-cntrb"><small><sup>*</sup>Equal contribution &nbsp;&nbsp; <sup>&dagger;</sup>Corresponding author: <a href="mailto:linhnv@soict.hust.edu.vn">linhnv@soict.hust.edu.vn</a></small></span>
+            </div>
+
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://aclanthology.org/2026.emnlp-main.212.pdf" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://aclanthology.org/2026.emnlp-main.212/" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-book-open"></i></span>
+                  <span>ACL Anthology</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/Savoxism/HyperProve" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="static/pdfs/HyperProve_poster.pdf" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-image"></i></span>
+                  <span>Poster</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="static/pdfs/HyperProve_slides.pdf" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-chalkboard-user"></i></span>
+                  <span>Slides</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-quote-left"></i></span>
+                  <span>BibTeX</span>
+                </a>
+              </span>
+            </div>
+
+            <div class="logo-row">
+              <img class="emnlp" src="static/images/emnlp_logo_full.png" alt="EMNLP 2026 Budapest">
+              <img src="static/images/hust.png" alt="Hanoi University of Science and Technology">
+              <img src="static/images/monash.png" alt="Monash University">
+              <img src="static/images/oregon.png" alt="University of Oregon">
+            </div>
+
+            <div class="tldr">
+              <strong>TL;DR</strong> &mdash; In multi-hop QA, the next useful fact often becomes relevant only after an earlier hop is resolved.
+              HyperProve carries each intermediate <em>answer together with its supporting atomic-fact hyperedges</em> as the structural frontier of the next hop,
+              then expands a query-biased local hypergraph from there.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Abstract -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              Multi-hop question answering often fails when retrieval treats evidence as isolated matches to the original question, since the facts needed to answer a complex question are usually connected through intermediate entities, relations, and constraints.
+            </p>
+            <p>
+              We propose <strong>HyperProve</strong>, a retrieval-augmented QA framework that addresses this challenge by coupling question decomposition with answer-conditioned expansion over a hypergraph of atomic facts. HyperProve does not use atomic facts, hypergraphs, or iterative retrieval in isolation; instead, it carries intermediate answers and supporting hyperedges as retrieval state, then uses that state to bias the next local hypergraph expansion. This design enables HyperProve to construct coherent evidence chains for final answer generation while making the retrieval process stateful and fact-centered.
+            </p>
+            <p>
+              Across multi-hop QA benchmarks, HyperProve achieves the best overall performance in our evaluation, outperforming the strongest baselines by an average relative improvement of <span class="highlight-badge">6.2%</span> in answer accuracy and <span class="highlight-badge">4.9%</span> in F1.
+            </p>
+            <div class="has-text-centered" style="margin-top: 1.5rem;">
+              <span class="key-result">Best mean on all 9 metrics</span>
+              <span class="key-result">+4.42 Acc. on MuSiQue</span>
+              <span class="key-result">82.31 Recall@10 on MuSiQue</span>
+              <span class="key-result">3.8&times; fewer online tokens than HopRAG</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Motivation -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Why Multi-Hop Retrieval Breaks</h2>
+      <div class="columns is-vcentered">
+        <div class="column is-6">
+          <a class="figure-link" href="static/images/teaser.png" target="_blank">
+            <img class="paper-figure" src="static/images/teaser.png" alt="Case study of a 4-hop question comparing PropRAG and HyperProve" loading="lazy">
+          </a>
+          <p class="figure-caption">Figure 1: A 4-hop question. PropRAG fails to connect <em>Last Supper</em> to <em>Peter</em> and drifts to the distractor chain <em>Venice &rarr; Republic of Venice</em>; HyperProve keeps the bridge entities and the correct path.</p>
+        </div>
+        <div class="column is-6">
+          <div class="content">
+            <p><strong>The bottleneck.</strong> Retrieval scores facts against the <em>original</em> question, but in multi-hop QA the next useful fact may not be similar to that question at all &mdash; it becomes relevant only after an earlier fact has established the right bridge. It is missed, or retrieval drifts to a look-alike distractor.</p>
+            <p><strong>Graph RAG</strong> (HippoRAG2, PropRAG, HyperGraphRAG, HGRAG) keeps structure, but expands from a fixed frontier scored against the unchanged question.</p>
+            <p><strong>Iterative RAG</strong> (IRCoT, HopRAG, ChainRAG) rewrites queries across hops, but carries only <em>text</em> forward, losing the evidence that justified the previous answer.</p>
+            <p><strong>HyperProve</strong> couples the two: <em>resolved answer + supporting atomic facts &rarr; next-hop structural frontier</em>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Method Overview -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Method Overview</h2>
+      <p class="lead">
+        HyperProve builds an offline, synonym-aware hypergraph of atomic facts, then answers a question online by decomposing it into dependent sub-queries, carrying each intermediate answer forward as a bridge entity, and expanding over local hypergraph neighborhoods.
+      </p>
+      <a class="figure-link" href="static/images/pipeline.png" target="_blank">
+        <img class="paper-figure" src="static/images/pipeline.png" alt="Overall HyperProve pipeline" loading="lazy">
+      </a>
+      <p class="figure-caption">Figure 2: Overall pipeline &mdash; (1) offline hypergraph construction, (2) online answer-guided multi-hop reasoning, (3) final answering.</p>
+
+      <div class="columns is-multiline" style="margin-top: 2rem;">
+        <div class="column is-4">
+          <div class="method-card">
+            <div class="tag-line">Offline</div>
+            <h4 class="title is-5">Atomic-Fact Hypergraph</h4>
+            <p>Each passage is split into self-contained atomic facts. A fact is a <strong>hyperedge</strong> joining all of its participating entities and its source passage, so <em>n</em>-ary facts with temporal or causal qualifiers do not collapse into binary triples:</p>
+            <div class="equation">$$h_i = (x_i,\ \mathcal{A}_i,\ d_{\sigma(i)})$$</div>
+            <p>Entity names whose embeddings have cosine &gt; 0.8 are merged as synonyms. Facts are linked when they share an entity or a passage; inverse degrees down-weight hubs:</p>
+            <div class="equation">$$W_s = B_{he}D_e^{-1}B_{he}^{\top} + B_{hd}D_d^{-1}B_{hd}^{\top}$$</div>
+            <div class="equation">$$T_s = \mathrm{RowNorm}\big(W_s - \mathrm{diag}(W_s)\big)$$</div>
+          </div>
+        </div>
+        <div class="column is-4">
+          <div class="method-card" style="border-top-color: var(--step-c);">
+            <div class="tag-line" style="color: var(--step-c);">Online &middot; per hop</div>
+            <h4 class="title is-5">Query-Biased Hyperedge Retrieval</h4>
+            <p>Around the current seeds, a local graph \(G_t^\star\) of at most 600 hyperedges is built. Neighbors are re-weighted by similarity to the rewritten sub-query \(q'_t\) and kept only above a threshold \(\theta\):</p>
+            <div class="equation">$$c_{t,k}=\cos\big(\phi(q'_t),\phi(x_k)\big)$$</div>
+            <div class="equation">$$T^\star_{q,t}[i,k] = \frac{\exp(c_{t,k}/\tau)}{\sum_{\ell\in\mathcal{N}_{t,\theta}(i)}\exp(c_{t,\ell}/\tau)}$$</div>
+            <p>Structure and query relevance are mixed, then facts are ranked with Personalized PageRank:</p>
+            <div class="equation">$$M_t = \alpha T^\star_{s,t} + (1-\alpha) T^\star_{q,t}$$</div>
+            <div class="equation">$$\pi_t^{(r+1)} = (1-\gamma)\,u_t^\star + \gamma M_t^{\top}\pi_t^{(r)}$$</div>
+          </div>
+        </div>
+        <div class="column is-4">
+          <div class="method-card" style="border-top-color: var(--step-e);">
+            <div class="tag-line" style="color: var(--step-e);">Online &middot; across hops</div>
+            <h4 class="title is-5">Answer-Guided Hyperedge Reasoning</h4>
+            <p>The question is decomposed into dependent sub-queries \(Q \to (q_1,\dots,q_m)\). Each hop is seeded by the carried frontier plus fresh dense hits:</p>
+            <div class="equation">$$\begin{aligned}\mathcal{S}_t = {} & \mathrm{TopK}(\mathcal{C}_t, K_c) \\ & \cup\ \mathrm{DenseTopK}(q'_t, \mathcal{H}, K_d)\end{aligned}$$</div>
+            <p>When a sub-query is answered, its bridge entity \(b_t\) and the entities of its supporting hyperedges \(\mathcal{U}_t\) define the next frontier:</p>
+            <div class="equation">$$\begin{gathered}\mathcal{E}_t = \mathrm{Entities}(\mathcal{U}_t) \\ \mathcal{C}_{t+1} = \mathrm{FindHyperedges}\big(\{b_t\} \cup \mathcal{E}_t\big)\end{gathered}$$</div>
+            <p>Otherwise the top-ranked hyperedges are carried as partial evidence. Defaults: \(K_c = K_d = 10\), \(\tau = 1\), \(\theta = 0.4\), \(\alpha = 0.5\), \(\gamma = 0.85\).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Reasoning loop -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">The Answer-Guided Reasoning Loop</h2>
+      <p class="lead">Each sub-query runs the same five steps. What moves from one hop to the next is not just text, but the answer <em>and</em> the hyperedges that prove it.</p>
+
+      <div class="loop">
+        <div class="loop-step" style="--c: var(--step-a);"><strong>Rewrite</strong>fill \(q_t\) with the answers found so far</div>
+        <div class="loop-step" style="--c: var(--step-b);"><strong>Seed</strong>carried frontier &cup; fresh dense hits</div>
+        <div class="loop-step" style="--c: var(--step-c);"><strong>Expand</strong>query-biased PPR on the local hypergraph</div>
+        <div class="loop-step" style="--c: var(--step-d);"><strong>Evaluate</strong>do the top facts fully answer \(q_t\)?</div>
+        <div class="loop-step" style="--c: var(--step-e);"><strong>Carry</strong>answer + its facts &rarr; next frontier</div>
+      </div>
+      <p class="loop-repeat">&#8635; next sub-query \(q_{t+1}\), repeated for \(t = 1, \dots, m\)</p>
+
+      <div class="algo-box">
+        <div class="algo-title">Algorithm 1 (simplified): HyperProve over hyperedge index \(\mathcal{H}\)</div>
+        <ol>
+          <li>\((q_1,\dots,q_m) \gets\) <span class="kw">Decompose</span>\((Q)\); \(\ \mathcal{R}, \mathcal{C}_1 \gets \emptyset\) <span class="cm">&#9655; answers so far, carried frontier</span></li>
+          <li><span class="kw">for</span> \(t = 1\) <span class="kw">to</span> \(m\) <span class="kw">do</span></li>
+          <li class="indent"><span class="dot" style="background: var(--step-a);">1</span>\(q'_t \gets\) <span class="kw">Rewrite</span>\((q_t, \mathcal{R})\) <span class="cm">&#9655; &ldquo;&hellip; named after <em>Peter</em>?&rdquo;</span></li>
+          <li class="indent"><span class="dot" style="background: var(--step-b);">2</span>\(S_t \gets\) <span class="kw">TopK</span>\((\mathcal{C}_t, 10)\ \cup\) <span class="kw">DenseTopK</span>\((q'_t, \mathcal{H}, 10)\)</li>
+          <li class="indent"><span class="dot" style="background: var(--step-c);">3</span>\((\mathcal{H}_t, \pi_t) \gets\) <span class="kw">LocalPPR</span>\((S_t, q'_t)\) <span class="cm">&#9655; rank facts with \(M_t\)</span></li>
+          <li class="indent"><span class="dot" style="background: var(--step-d);">4</span>\((\text{ok}, a_t, \mathcal{U}_t) \gets\) <span class="kw">Evaluate</span>\((q_t, \mathcal{H}_t)\) <span class="cm">&#9655; \(\mathcal{U}_t\): supporting facts</span></li>
+          <li class="indent"><span class="dot" style="background: var(--step-e);">5</span><span class="kw">if</span> ok: \(\mathcal{R} \mathrel{+}= (q_t, a_t)\); \(\ \mathcal{C}_{t+1} \gets\) <span class="kw">Hyperedges</span>\(\big(a_t \cup \mathrm{Entities}(\mathcal{U}_t)\big)\)</li>
+          <li class="indent2"><span class="kw">else</span>: \(\mathcal{C}_{t+1} \gets\) <span class="kw">TopK</span>\((\mathcal{H}_t, \pi_t, 10)\) <span class="cm">&#9655; keep partial evidence</span></li>
+          <li><span class="kw">return</span> <span class="kw">Integrate</span>\((Q, \mathcal{R})\) if all hops answered, else <span class="kw">Reader</span>\((Q,\) top-10 passages\()\)</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Main Results -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Main Results</h2>
+      <p class="lead">
+        Evaluated on 1,000 questions each from <strong>MuSiQue</strong>, <strong>HotpotQA</strong> and <strong>2WikiMultiHopQA</strong>.
+        Every method uses <strong>BGE-M3</strong> as retriever and <strong>GPT-OSS-20B</strong> as backbone LLM; metrics are LLM-as-a-judge accuracy, Exact Match and token-level F1, mean over three runs.
+      </p>
+
+      <div class="is-flex is-justify-content-space-between is-align-items-center is-flex-wrap-wrap">
+        <h3 class="title is-5" style="margin: 0;">Table 1: Accuracy, EM and F1 on three multi-hop QA benchmarks</h3>
+        <label class="std-toggle"><input type="checkbox" id="std-toggle" checked>show &plusmn; std. dev.</label>
+      </div>
+      <div class="table-responsive">
+      <table class="results-table" id="main-results">
+        <thead>
+          <tr>
+            <th rowspan="2" style="text-align:left;">Method</th>
+            <th colspan="3">MuSiQue</th>
+            <th colspan="3">HotpotQA</th>
+            <th colspan="3">2WikiMultiHopQA</th>
+          </tr>
+          <tr>
+            <th>Acc.</th><th>EM</th><th>F1</th>
+            <th>Acc.</th><th>EM</th><th>F1</th>
+            <th>Acc.</th><th>EM</th><th>F1</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="section-header"><td colspan="10">Dense Retrieval</td></tr>
+          <tr>
+            <td class="model-name">Contriever</td>
+            <td>47.80<span class="std">&plusmn; 0.28</span></td><td>22.30<span class="std">&plusmn; 0.30</span></td><td>32.10<span class="std">&plusmn; 0.26</span></td><td>55.55<span class="std">&plusmn; 0.21</span></td><td>44.40<span class="std">&plusmn; 0.24</span></td><td>57.50<span class="std">&plusmn; 0.21</span></td><td>69.60<span class="std">&plusmn; 0.20</span></td><td>38.50<span class="std">&plusmn; 0.24</span></td><td>43.70<span class="std">&plusmn; 0.21</span></td>
+          </tr>
+          <tr>
+            <td class="model-name">BGE-M3</td>
+            <td>51.50<span class="std">&plusmn; 0.25</span></td><td>27.80<span class="std">&plusmn; 0.27</span></td><td>39.70<span class="std">&plusmn; 0.24</span></td><td>68.12<span class="std">&plusmn; 0.19</span></td><td>47.80<span class="std">&plusmn; 0.22</span></td><td>61.80<span class="std">&plusmn; 0.19</span></td><td>72.18<span class="std">&plusmn; 0.18</span></td><td>48.20<span class="std">&plusmn; 0.22</span></td><td>54.50<span class="std">&plusmn; 0.19</span></td>
+          </tr>
+          <tr class="section-header"><td colspan="10">Structured (Graph) Retrieval</td></tr>
+          <tr>
+            <td class="model-name">HippoRAG2</td>
+            <td>52.00<span class="std">&plusmn; 0.36</span></td><td>37.20<span class="std">&plusmn; 0.40</span></td><td>48.60<span class="std">&plusmn; 0.34</span></td><td>81.70<span class="std">&plusmn; 0.29</span></td><td>62.70<span class="std">&plusmn; 0.33</span></td><td class="second">75.50<span class="std">&plusmn; 0.29</span></td><td>86.40<span class="std">&plusmn; 0.28</span></td><td>65.00<span class="std">&plusmn; 0.34</span></td><td>71.00<span class="std">&plusmn; 0.29</span></td>
+          </tr>
+          <tr>
+            <td class="model-name">PropRAG</td>
+            <td>50.90<span class="std">&plusmn; 0.30</span></td><td>29.30<span class="std">&plusmn; 0.33</span></td><td>46.73<span class="std">&plusmn; 0.29</span></td><td class="second">85.80<span class="std">&plusmn; 0.24</span></td><td>57.80<span class="std">&plusmn; 0.28</span></td><td>73.79<span class="std">&plusmn; 0.24</span></td><td>77.50<span class="std">&plusmn; 0.23</span></td><td>58.00<span class="std">&plusmn; 0.29</span></td><td>68.78<span class="std">&plusmn; 0.24</span></td>
+          </tr>
+          <tr>
+            <td class="model-name">HyperGraphRAG</td>
+            <td>55.13<span class="std">&plusmn; 0.43</span></td><td>42.20<span class="std">&plusmn; 0.47</span></td><td>53.80<span class="std">&plusmn; 0.40</span></td><td>77.89<span class="std">&plusmn; 0.34</span></td><td class="second">63.90<span class="std">&plusmn; 0.39</span></td><td>73.80<span class="std">&plusmn; 0.33</span></td><td>77.72<span class="std">&plusmn; 0.33</span></td><td class="second">68.30<span class="std">&plusmn; 0.40</span></td><td>71.30<span class="std">&plusmn; 0.33</span></td>
+          </tr>
+          <tr>
+            <td class="model-name">HGRAG</td>
+            <td>58.60<span class="std">&plusmn; 0.39</span></td><td>41.19<span class="std">&plusmn; 0.43</span></td><td class="second">55.04<span class="std">&plusmn; 0.37</span></td><td>80.10<span class="std">&plusmn; 0.31</span></td><td>54.90<span class="std">&plusmn; 0.36</span></td><td>69.43<span class="std">&plusmn; 0.30</span></td><td>85.00<span class="std">&plusmn; 0.30</span></td><td>64.10<span class="std">&plusmn; 0.37</span></td><td>74.10<span class="std">&plusmn; 0.31</span></td>
+          </tr>
+          <tr class="section-header"><td colspan="10">Iterative Retrieval</td></tr>
+          <tr>
+            <td class="model-name">IRCoT</td>
+            <td>56.67<span class="std">&plusmn; 0.64</span></td><td>34.10<span class="std">&plusmn; 0.72</span></td><td>47.60<span class="std">&plusmn; 0.59</span></td><td>85.23<span class="std">&plusmn; 0.49</span></td><td>55.70<span class="std">&plusmn; 0.56</span></td><td>71.20<span class="std">&plusmn; 0.47</span></td><td>83.65<span class="std">&plusmn; 0.47</span></td><td>60.70<span class="std">&plusmn; 0.57</span></td><td>74.30<span class="std">&plusmn; 0.47</span></td>
+          </tr>
+          <tr>
+            <td class="model-name">T2RAG</td>
+            <td>54.67<span class="std">&plusmn; 0.47</span></td><td>34.30<span class="std">&plusmn; 0.52</span></td><td>45.60<span class="std">&plusmn; 0.44</span></td><td>81.33<span class="std">&plusmn; 0.36</span></td><td>54.20<span class="std">&plusmn; 0.42</span></td><td>67.30<span class="std">&plusmn; 0.35</span></td><td>83.75<span class="std">&plusmn; 0.35</span></td><td>66.70<span class="std">&plusmn; 0.43</span></td><td>74.40<span class="std">&plusmn; 0.36</span></td>
+          </tr>
+          <tr>
+            <td class="model-name">HopRAG</td>
+            <td class="second">67.18<span class="std">&plusmn; 0.72</span></td><td class="second">42.40<span class="std">&plusmn; 0.80</span></td><td>54.90<span class="std">&plusmn; 0.66</span></td><td>85.51<span class="std">&plusmn; 0.55</span></td><td>61.10<span class="std">&plusmn; 0.63</span></td><td>68.26<span class="std">&plusmn; 0.52</span></td><td class="second">86.66<span class="std">&plusmn; 0.53</span></td><td>62.00<span class="std">&plusmn; 0.64</span></td><td class="second">76.06<span class="std">&plusmn; 0.52</span></td>
+          </tr>
+          <tr>
+            <td class="model-name">ChainRAG</td>
+            <td>60.01<span class="std">&plusmn; 0.66</span></td><td>41.20<span class="std">&plusmn; 0.74</span></td><td>54.15<span class="std">&plusmn; 0.61</span></td><td>85.46<span class="std">&plusmn; 0.50</span></td><td>60.70<span class="std">&plusmn; 0.58</span></td><td>74.66<span class="std">&plusmn; 0.48</span></td><td>82.48<span class="std">&plusmn; 0.49</span></td><td>63.30<span class="std">&plusmn; 0.60</span></td><td>74.39<span class="std">&plusmn; 0.49</span></td>
+          </tr>
+          <tr class="highlight-row">
+            <td class="model-name"><strong>HyperProve (ours)</strong></td>
+            <td><strong>71.60</strong><span class="std">&plusmn; 0.58</span></td><td><strong>42.83</strong><span class="std">&plusmn; 0.64</span></td><td><strong>59.23</strong><span class="std">&plusmn; 0.54</span></td><td><strong>91.30</strong><span class="std">&plusmn; 0.43</span></td><td><strong>63.92</strong><span class="std">&plusmn; 0.49</span></td><td><strong>76.64</strong><span class="std">&plusmn; 0.41</span></td><td><strong>91.40</strong><span class="std">&plusmn; 0.42</span></td><td><strong>69.70</strong><span class="std">&plusmn; 0.51</span></td><td><strong>80.01</strong><span class="std">&plusmn; 0.43</span></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="table-note"><strong>Bold</strong>: best mean. <span style="text-decoration: underline;">Underline</span>: strongest baseline.</p>
+
+      <div class="content" style="margin-top: 1.5rem;">
+        <ul>
+          <li><strong>Best mean on every metric</strong> across all three benchmarks. Accuracy gains over the strongest baseline: <strong>+4.42</strong> on MuSiQue (vs. HopRAG), <strong>+5.50</strong> on HotpotQA (vs. PropRAG), <strong>+4.74</strong> on 2Wiki (vs. HopRAG).</li>
+          <li><strong>Static structure and iterative retrieval are complementary but incomplete.</strong> The strongest baseline alternates between the two families: graph methods connect evidence from a fixed frontier, iterative methods adapt the query but can drift from the evidence that justified the previous hop.</li>
+          <li>Two EM margins (42.83 vs. 42.40 on MuSiQue, 63.92 vs. 63.90 on HotpotQA) are within run-level variation and are not claimed as resolved improvements.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Ablations -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Ablation Study</h2>
+      <p class="lead">Every component helps. Decomposition and the query-biased transition matter most, and the gap widens on 4-hop questions.</p>
+
+      <div class="columns">
+        <div class="column is-7">
+          <h3 class="title is-5">Table 2: Retrieval components (MuSiQue accuracy by reasoning depth)</h3>
+          <div class="table-responsive">
+          <table class="results-table">
+            <thead>
+              <tr><th style="text-align:left;">Variant</th><th>Overall</th><th>2-hop</th><th>3-hop</th><th>4-hop</th></tr>
+            </thead>
+            <tbody>
+              <tr class="highlight-row"><td class="model-name"><strong>HyperProve (full)</strong></td><td><strong>71.60</strong></td><td><strong>78.00</strong></td><td><strong>72.96</strong></td><td><strong>49.40</strong></td></tr>
+              <tr><td class="model-name">w/o bridge entity</td><td>64.50 <span class="drop">(&minus;7.10)</span></td><td>69.11</td><td>67.41</td><td>44.58</td></tr>
+              <tr><td class="model-name">w/o fresh dense seed</td><td>61.30 <span class="drop">(&minus;10.30)</span></td><td>71.24</td><td>59.18</td><td>34.34</td></tr>
+              <tr><td class="model-name">w/o structural transition \(T_s\)</td><td>62.13 <span class="drop">(&minus;9.47)</span></td><td>67.02</td><td>64.65</td><td>42.06</td></tr>
+              <tr><td class="model-name">w/o query transition \(T^\star_q\)</td><td>58.17 <span class="drop">(&minus;13.43)</span></td><td>65.20</td><td>58.60</td><td>35.40</td></tr>
+              <tr><td class="model-name">w/o decomposition</td><td>51.28 <span class="drop">(&minus;20.32)</span></td><td>58.11</td><td>49.05</td><td>33.73</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="table-note">1,000 questions: 518 2-hop, 316 3-hop, 166 4-hop.</p>
+        </div>
+        <div class="column is-5">
+          <h3 class="title is-5">Table 3: Sensitivity to \(\alpha\) and \(\theta\) (MuSiQue)</h3>
+          <div class="table-responsive">
+          <table class="results-table">
+            <thead>
+              <tr><th>\(\alpha\)</th><th>\(\theta\)</th><th>Recall</th><th>EM</th><th>F1</th><th>Acc.</th></tr>
+            </thead>
+            <tbody>
+              <tr class="highlight-row"><td>0.50</td><td>0.40</td><td>82.31</td><td>42.83</td><td>59.23</td><td>71.60</td></tr>
+              <tr><td>0.25</td><td>0.40</td><td>81.18</td><td>42.41</td><td>58.76</td><td>70.80</td></tr>
+              <tr><td>0.75</td><td>0.40</td><td>83.06</td><td>43.12</td><td>59.61</td><td>71.40</td></tr>
+              <tr><td>0.50</td><td>0.30</td><td>83.45</td><td>41.97</td><td>58.49</td><td>70.30</td></tr>
+              <tr><td>0.50</td><td>0.50</td><td>81.72</td><td>43.05</td><td>59.40</td><td>71.90</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="table-note">Accuracy changes by at most 1.3 points across the tested settings; the balanced default \((0.50, 0.40)\) is kept.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Evidence chain faithfulness -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Evidence Chain Faithfulness</h2>
+      <p class="lead">Under the same top-10 budget, HyperProve retrieves more of the gold supporting passages, and later hops keep recovering evidence that the first hop missed.</p>
+
+      <div class="columns is-vcentered">
+        <div class="column is-6">
+          <h3 class="title is-5">Table 4: Recall@10 of gold passages</h3>
+          <div class="table-responsive">
+          <table class="results-table">
+            <thead>
+              <tr><th style="text-align:left;">Method</th><th>MuSiQue</th><th>HotpotQA</th><th>2Wiki</th><th>Avg. gain<br>after hop 1</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="model-name">HopRAG</td><td>66.63</td><td>82.82</td><td>84.17</td><td>+25.98</td></tr>
+              <tr><td class="model-name">ChainRAG</td><td>67.42</td><td>89.45</td><td>75.85</td><td>+26.35</td></tr>
+              <tr class="highlight-row"><td class="model-name"><strong>HyperProve</strong></td><td><strong>82.31</strong></td><td><strong>96.20</strong></td><td><strong>98.15</strong></td><td><strong>+41.24</strong></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="table-note">+14.89, +6.75 and +13.98 Recall@10 over the strongest iterative baseline.</p>
+        </div>
+        <div class="column is-6">
+          <a class="figure-link" href="static/images/hopwise_coverage.png" target="_blank">
+            <img class="paper-figure" src="static/images/hopwise_coverage.png" alt="Hop-wise cumulative support coverage" loading="lazy">
+          </a>
+          <p class="figure-caption">Figure 3: Hop-wise cumulative gold-passage coverage. Each decomposed hop increases or maintains coverage, with the largest gain after the first hop.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Efficiency -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Efficiency</h2>
+      <p class="lead">
+        HyperProve sits in a middle accuracy&ndash;cost regime: more computation than lightweight retrieval, but below the two strongest high-cost iterative baselines.
+        Against HopRAG it is <strong>+4.42</strong> points more accurate while using <strong>26.5M fewer tokens</strong> and <strong>13.3K fewer seconds</strong>.
+      </p>
+      <div class="columns">
+        <div class="column is-6">
+          <h3 class="title is-5">(a) Online inference on MuSiQue</h3>
+          <div class="table-responsive">
+          <table class="results-table">
+            <thead>
+              <tr><th style="text-align:left;">Method</th><th>Acc.</th><th>Tokens</th><th>Latency (s)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="model-name">BGE-M3</td><td>51.50</td><td>1.7M</td><td>4.1K</td></tr>
+              <tr><td class="model-name">IRCoT</td><td>56.67</td><td>4.4M</td><td>3.8K</td></tr>
+              <tr><td class="model-name">T2RAG</td><td>54.67</td><td>2.4M</td><td>9.6K</td></tr>
+              <tr><td class="model-name">HopRAG</td><td>67.18</td><td>36.1M</td><td>45.2K</td></tr>
+              <tr><td class="model-name">ChainRAG</td><td>60.01</td><td>15.4M</td><td>37.0K</td></tr>
+              <tr class="highlight-row"><td class="model-name"><strong>HyperProve</strong></td><td><strong>71.60</strong></td><td><strong>9.6M</strong></td><td><strong>31.9K</strong></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="table-note">1,000 questions; token and latency values exclude answer-judge cost.</p>
+        </div>
+        <div class="column is-6">
+          <h3 class="title is-5">(b) Offline construction</h3>
+          <div class="table-responsive">
+          <table class="results-table">
+            <thead>
+              <tr><th style="text-align:left;">Method</th><th>Extraction</th><th>Calls</th><th>Tokens</th><th>Source</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="model-name">HyperGraphRAG</td><td>Facts + entities</td><td>11,656</td><td>20.9M</td><td>Estimate</td></tr>
+              <tr><td class="model-name">PropRAG</td><td>Entities + props.</td><td>23,312</td><td>21.1M</td><td>Reported</td></tr>
+              <tr><td class="model-name">HGRAG</td><td>Entities</td><td>11,656</td><td>5.7M</td><td>Estimate</td></tr>
+              <tr class="highlight-row"><td class="model-name"><strong>HyperProve</strong></td><td>Entities + facts</td><td>23,312</td><td>20.8M</td><td>Measured</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="table-note"><em>Estimate</em>: normalized to the 11,656-passage MuSiQue corpus. Offline cost is comparable to PropRAG and HyperGraphRAG and is amortized over queries.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Qualitative -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Qualitative Analysis</h2>
+
+      <h3 class="title is-5">Case 1: Hidden-bridge reasoning</h3>
+      <p class="content">
+        <strong>Question:</strong> <em>When was the start of the battle of the birthplace of the performer of III?</em>
+        None of the bridge entities &mdash; <em>Stanton Moore</em>, <em>New Orleans</em>, the <em>Battle of New Orleans</em> &mdash; appear in the question.
+      </p>
+      <a class="figure-link" href="static/images/case_study.png" target="_blank">
+        <img class="paper-figure" src="static/images/case_study.png" alt="HyperProve versus HippoRAG2 on a hidden-bridge MuSiQue example" loading="lazy">
+      </a>
+      <p class="figure-caption">Figure 4: HyperProve carries intermediate answers as bridge entities; HippoRAG2 over-weights the surface terms <em>III</em>, <em>battle</em> and <em>birthplace</em> and misses the hidden chain.</p>
+
+      <div class="columns" style="margin-top: 1.5rem;">
+        <div class="column is-6">
+          <div class="trajectory-box trajectory-correct">
+            <div class="box-title">HyperProve (answer-guided)</div>
+            <p>Decompose: <em>Who is the performer of III?</em> &rarr; <em>What is that performer's birthplace?</em> &rarr; <em>When did the battle at that birthplace start?</em></p>
+            <p><span class="chain">III</span> &rarr; <span class="chain">Stanton Moore</span> &rarr; <span class="chain">New Orleans</span> &rarr; <span class="chain">Battle of New Orleans</span></p>
+            <p>Each hop's answer is carried as the frontier for the next retrieval.</p>
+            <p class="answer">Answer: December 14, 1814 &#10003;</p>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="trajectory-box trajectory-incorrect">
+            <div class="box-title">HippoRAG2 (broad retrieval)</div>
+            <p>Treats the question as one broad query and follows surface terms:</p>
+            <p><span class="chain missed">III &rarr; Philip III of Spain</span> <span class="chain missed">battle &rarr; Battle of Atapuerca</span> <span class="chain missed">birthplace &rarr; ?</span></p>
+            <p>Associative retrieval follows unrelated evidence and never recovers the bridge chain.</p>
+            <p class="answer">Answer: 1 September 1054 &#10007;</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="title is-5" style="margin-top: 2rem;">Case 2: Joining two evidence chains under a constraint</h3>
+      <p class="content">A multi-entity MuSiQue question needs two separate chains joined, and then a rank asked of the <em>San Diego urban area within California</em> &mdash; not of San Diego as a city.</p>
+      <div class="columns">
+        <div class="column is-6">
+          <div class="trajectory-box trajectory-correct">
+            <div class="box-title">HyperProve &mdash; top-10 coverage 4 / 4</div>
+            <p><span class="chain">Pathology</span> &rarr; <span class="chain">San Diego</span></p>
+            <p><span class="chain">Still Swingin'</span> &rarr; <span class="chain">Papa Roach</span> &rarr; <span class="chain">California</span></p>
+            <p>Applies the rank query to San Diego under the California urban-area constraint.</p>
+            <p class="answer">Answer: third-largest &#10003;</p>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="trajectory-box trajectory-incorrect">
+            <div class="box-title">ChainRAG &mdash; top-10 coverage 2 / 4</div>
+            <p><span class="chain">Pathology</span> &rarr; <span class="chain">San Diego</span> &nbsp; <span class="chain">Still Swingin'</span> &rarr; <span class="chain">Papa Roach</span></p>
+            <p><span class="chain missed">Papa Roach &rarr; Vacaville, California</span> <span class="chain missed">San Diego urban area &rarr; third-largest</span></p>
+            <p>The reader is pulled to a nearby city-population rank whose scope does not match.</p>
+            <p class="answer">Answer: 2nd &#10007;</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="trajectory-box trajectory-warn">
+        <div class="box-title">Failure mode: cascading answer state</div>
+        <p>Gold chain: <span class="chain">California</span> &rarr; <span class="chain">Samuel Brannan</span> &rarr; <span class="chain">Sacramento</span> &rarr; <span class="chain">Rio Linda</span>.
+          HyperProve resolves the first hop, then accepts <em>Francis J. Banfield</em> as a plausible but unsupported person. Because that answer conditions both the rewritten query and the structural frontier, the chain drifts to <em>New York City</em> and ends at <em>New Jersey</em>.
+          Confidence-aware propagation, provenance constraints and multi-frontier recovery are left as future work.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- BibTeX -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre id="bibtex-code"><code>@inproceedings{an-etal-2026-hyperprove,
+    title = "{H}yper{P}rove: Answer-Guided Hypergraph Expansion for Multi-Hop Question Answering",
+    author = "An, Nguyen Phu  and
+      Quang, Dung Nguyen  and
+      An, Luu Hieu  and
+      Van, Linh Ngo  and
+      Le, Trung  and
+      Nguyen, Thien Huu",
+    editor = "Lee, Hung-Yi  and
+      Dev, Sunipa  and
+      Li, Jessy  and
+      Elliott, Desmond",
+    booktitle = "Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing",
+    month = oct,
+    year = "2026",
+    address = "Budapest, Hungary",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2026.emnlp-main.212/",
+    pages = "4867--4882",
+    ISBN = "979-8-89176-459-0"
+}</code></pre>
+    </div>
+  </section>
+
+
+  <!-- Acknowledgments -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop content has-text-centered">
+      <h2 class="title is-3">Acknowledgments</h2>
+      <p>This research was funded by Vingroup Innovation Foundation (VINIF) under project code VINIF.2026.DA117.</p>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content has-text-centered">
+            <p>
+              This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener">Academic Project Page Template</a>, which was adopted from the <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies</a> project page.
+              <br>This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

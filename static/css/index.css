@@ -1,0 +1,495 @@
+/* HyperProve project page.
+   Adapted from the Academic Project Page Template (Nerfies) used by loongrl.github.io. */
+:root {
+  --primary-color: #1769aa;
+  --primary-hover: #0f4f82;
+  --primary-soft: #e8f2fb;
+  --accent-red: #d6232f;
+  --text-primary: #1e293b;
+  --text-secondary: #55657a;
+  --text-light: #8a99ad;
+  --background-primary: #ffffff;
+  --background-secondary: #f7f9fc;
+  --background-accent: #eef3f8;
+  --border-color: #e2e8f0;
+  --ok: #15803d;
+  --ok-soft: #f0fdf4;
+  --ok-border: #86efac;
+  --bad: #b91c1c;
+  --bad-soft: #fef2f2;
+  --bad-border: #fca5a5;
+  --warn: #92400e;
+  --warn-soft: #fffbeb;
+  --warn-border: #fcd34d;
+  --step-a: #0173b2;
+  --step-b: #027a59;
+  --step-c: #b35c00;
+  --step-d: #823c96;
+  --step-e: #be283c;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --gradient-accent: linear-gradient(135deg, #1769aa 0%, #d6232f 100%);
+  --border-radius: 12px;
+  --border-radius-lg: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 16px;
+  background-color: var(--background-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Buttons ---------- */
+.button {
+  border-radius: var(--border-radius) !important;
+  font-weight: 600 !important;
+  transition: var(--transition) !important;
+}
+.button.is-dark {
+  background: var(--text-primary) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: var(--shadow-md);
+}
+.button.is-dark:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  background: var(--primary-color) !important;
+}
+.link-block a { margin: 8px 4px; }
+
+/* ---------- Hero ---------- */
+.hero.is-light {
+  background: var(--background-secondary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+.hero-body { padding: 4rem 1.5rem; }
+.hero.is-light .title { color: var(--text-primary); }
+/* Bulma centers .container in the flex hero with auto margins, which lets wide
+   tables and equations push it past the viewport on phones. */
+.hero > .container { width: 100%; min-width: 0; }
+/* KaTeX's hidden MathML is absolutely positioned; keep it inside the scroll boxes. */
+.algo-box, .equation, .table-responsive { position: relative; }
+
+.publication-title {
+  font-weight: 800 !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 2rem !important;
+  line-height: 1.15 !important;
+}
+.publication-title .brand { color: var(--primary-color); }
+
+.publication-authors {
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.publication-authors a {
+  color: var(--primary-color) !important;
+  text-decoration: none;
+  font-weight: 600;
+}
+.author-block { display: inline-block; margin-right: 0.5rem; }
+.affiliations { color: var(--text-secondary); }
+
+.venue-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #d6232f, #f06a3a);
+  color: white;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0.9rem 0 0.4rem;
+  transition: var(--transition);
+}
+.venue-badge:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.eql-cntrb { font-size: 0.875rem; color: var(--text-light); font-style: italic; }
+
+.logo-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+  margin-top: 1.75rem;
+}
+.logo-row img { height: 56px; width: auto; }
+.logo-row img.emnlp { height: 44px; }
+
+.tldr {
+  max-width: 760px;
+  margin: 1.75rem auto 0;
+  padding: 1rem 1.25rem;
+  background: var(--primary-soft);
+  border-left: 4px solid var(--primary-color);
+  border-radius: 8px;
+  text-align: left;
+  color: var(--text-primary);
+}
+
+/* ---------- Section titles ---------- */
+.title.is-3 {
+  font-weight: 700 !important;
+  color: var(--text-primary);
+  margin-bottom: 2rem !important;
+  position: relative;
+  padding-bottom: 1rem;
+}
+.title.is-3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--gradient-accent);
+  border-radius: 2px;
+}
+.title.is-5 { margin-top: 1.5rem; }
+
+.content.has-text-justified {
+  font-size: 1.08rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+.content.has-text-justified p { margin-bottom: 1.25rem; }
+
+.lead {
+  max-width: 820px;
+  margin: 0 auto 1.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* ---------- Badges ---------- */
+.key-result {
+  display: inline-block;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  font-weight: 600;
+  color: #1e40af;
+  font-size: 0.9rem;
+}
+.highlight-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #1769aa, #3b8fd4);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ---------- Figures ---------- */
+.paper-figure {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  background: white;
+  transition: var(--transition);
+}
+a.figure-link:hover .paper-figure { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.figure-caption {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0.75em;
+  font-style: italic;
+}
+
+/* ---------- Method cards ---------- */
+.method-card {
+  height: 100%;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 1.25rem 1.25rem 0.75rem;
+  box-shadow: var(--shadow-sm);
+}
+.method-card .tag-line {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+}
+.method-card h4 { margin: 0.25rem 0 0.75rem !important; }
+.method-card p, .method-card li { font-size: 0.95rem; color: var(--text-secondary); }
+.equation { overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; font-size: 0.95rem; }
+
+/* ---------- Reasoning loop ---------- */
+.loop {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  counter-reset: step;
+}
+.loop-step {
+  position: relative;
+  border: 2px solid var(--c);
+  background: color-mix(in srgb, var(--c) 7%, white);
+  border-radius: 10px;
+  padding: 1.6rem 0.8rem 0.9rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.loop-step strong { display: block; color: var(--c); font-size: 1.02rem; margin-bottom: 0.25rem; }
+.loop-step::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c);
+  color: white;
+  font-weight: 700;
+  line-height: 28px;
+  text-align: center;
+}
+.loop-step:not(:last-child)::after {
+  content: '\2192';
+  position: absolute;
+  right: -0.78rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  line-height: 1;
+  font-weight: 700;
+}
+.loop-repeat {
+  text-align: center;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  font-size: 0.92rem;
+}
+
+.algo-box {
+  margin-top: 2rem;
+  background: white;
+  border-top: 2px solid var(--text-primary);
+  border-bottom: 2px solid var(--text-primary);
+  padding: 0.75rem 1rem 1rem;
+  font-size: 0.92rem;
+  overflow-x: auto;
+}
+.algo-box .algo-title {
+  font-weight: 700;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--text-primary);
+}
+.algo-box ol { margin: 0 0 0 1.6rem !important; }
+.algo-box li { margin: 0.15rem 0 !important; white-space: nowrap; }
+.algo-box .indent { padding-left: 1.5rem; }
+.algo-box .indent2 { padding-left: 3rem; }
+.algo-box .kw { font-weight: 700; }
+.algo-box .cm { color: var(--text-light); }
+.dot {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.75em;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2em;
+  margin-right: 0.35em;
+  vertical-align: 0.1em;
+}
+
+/* ---------- Tables ---------- */
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 1em 0;
+}
+.results-table th, .results-table td {
+  padding: 7px 9px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.results-table th { background-color: #f3f6f9; font-weight: 600; }
+.results-table .model-name { text-align: left; font-weight: 500; }
+.results-table .section-header td {
+  background-color: #fafbfc;
+  font-style: italic;
+  color: #666;
+  text-align: center;
+  font-size: 0.85rem;
+}
+.results-table .highlight-row { background-color: var(--primary-soft); font-weight: 600; }
+.results-table .highlight-row td { border-top: 2px solid var(--primary-color); }
+.results-table .second { text-decoration: underline; text-underline-offset: 3px; }
+.results-table .std { display: block; font-size: 0.72rem; color: var(--text-light); font-weight: 400; }
+.results-table .gain { color: var(--ok); font-weight: 700; }
+.results-table .drop { color: var(--bad); }
+.results-table td.text-left { text-align: left; white-space: normal; }
+.table-note { font-size: 0.85rem; color: var(--text-secondary); text-align: center; }
+
+.std-toggle { font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; user-select: none; }
+.std-toggle input { margin-right: 0.35rem; vertical-align: -1px; }
+.hide-std .std { display: none; }
+
+/* ---------- Trajectory boxes ---------- */
+.trajectory-box {
+  border-radius: 8px;
+  padding: 1.25em 1.5em;
+  margin: 1em 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.trajectory-box .box-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.6em; padding-bottom: 0.5em; }
+.trajectory-box p { margin-bottom: 0.5em !important; }
+.trajectory-box .answer { text-align: right; font-weight: 700; margin-bottom: 0 !important; }
+.trajectory-correct { background: var(--ok-soft); border: 1px solid var(--ok-border); }
+.trajectory-correct .box-title { color: #166534; border-bottom: 2px solid var(--ok-border); }
+.trajectory-correct .answer { color: #166534; }
+.trajectory-incorrect { background: var(--bad-soft); border: 1px solid var(--bad-border); }
+.trajectory-incorrect .box-title { color: #991b1b; border-bottom: 2px solid var(--bad-border); }
+.trajectory-incorrect .answer { color: #991b1b; }
+.trajectory-warn { background: var(--warn-soft); border: 1px solid var(--warn-border); }
+.trajectory-warn .box-title { color: var(--warn); border-bottom: 2px solid var(--warn-border); }
+.chain {
+  display: inline-block;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0 0.45em;
+  font-size: 0.9em;
+  margin: 0.1em 0;
+}
+.chain.missed { border-style: dashed; border-color: var(--bad-border); color: var(--bad); }
+
+/* ---------- BibTeX ---------- */
+pre {
+  background: var(--background-accent) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius) !important;
+  padding: 1.5rem !important;
+  font-size: 0.88rem !important;
+  overflow-x: auto;
+}
+code {
+  background: var(--background-accent) !important;
+  color: var(--text-primary) !important;
+  font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace !important;
+}
+.bibtex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.bibtex-header .title { margin-bottom: 0 !important; }
+.copy-bibtex-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.copy-bibtex-btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.copy-bibtex-btn.copied { background: #10b981; }
+
+/* ---------- Footer & misc ---------- */
+.footer {
+  background: var(--background-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: 3rem 1.5rem;
+}
+.footer .content { color: var(--text-secondary); line-height: 1.7; }
+.footer a { color: var(--primary-color); }
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: var(--shadow-lg);
+}
+.scroll-to-top:hover { background: var(--primary-hover); transform: translateY(-3px); }
+.scroll-to-top.visible { opacity: 1; visibility: visible; }
+
+.button:focus, a:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero, .section { animation: fadeInUp 0.6s ease-out; }
+
+/* ---------- Responsive ---------- */
+@media screen and (max-width: 1023px) {
+  .loop { grid-template-columns: 1fr; gap: 1.25rem; }
+  .loop-step { text-align: left; padding: 0.9rem 1rem 0.9rem 3rem; }
+  .loop-step::before { top: 50%; left: 0.8rem; transform: translateY(-50%); }
+  .loop-step:not(:last-child)::after { content: '\2193'; right: auto; left: 50%; top: auto; bottom: -1.2rem; transform: translateX(-50%); }
+}
+
+@media screen and (max-width: 768px) {
+  .hero-body { padding: 2rem 1rem; }
+  .publication-title { font-size: 2rem !important; line-height: 1.2 !important; }
+  .publication-authors { font-size: 1rem !important; }
+  .button { margin: 0.25rem !important; font-size: 0.875rem !important; }
+  .content.has-text-justified { font-size: 1rem; }
+  .results-table { font-size: 0.75rem; }
+  .results-table th, .results-table td { padding: 4px 5px; }
+  .logo-row img { height: 40px; }
+  .logo-row img.emnlp { height: 32px; }
+  .scroll-to-top { bottom: 1rem; right: 1rem; width: 44px; height: 44px; }
+}
+
+@media screen and (max-width: 480px) {
+  .publication-title { font-size: 1.65rem !important; }
+  .link-block { display: inline-block; }
+  .bibtex-header { flex-wrap: wrap; gap: 0.75rem; }
+}
+
+@media print {
+  .scroll-to-top { display: none; }
+  .hero, .section { animation: none; }
+}
