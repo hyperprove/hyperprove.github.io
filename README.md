@@ -10,7 +10,6 @@ Các đường dẫn `HyperProve_Poster/...`, `HyperProve_Slides/...` dưới đ
 - `index.html`: toàn bộ nội dung; số liệu lấy từ `HyperProve_Poster/docs/HyperProve.pdf`.
 - `static/css/index.css`, `static/js/index.js`: style và script (copy BibTeX, nút lên đầu trang, bật/tắt ± std).
 - `static/images/`: figures của paper và logo (copy từ `HyperProve_Slides/figures`, `HyperProve_Poster/logos`).
-- `static/pdfs/`: poster (`HyperProve_Poster/main.pdf`) và slides (`HyperProve_Slides/EMNLP 2026_main-585.pdf`).
 
 Bulma, Font Awesome, KaTeX và font Inter được tải từ CDN, nên trang không cần build.
 
